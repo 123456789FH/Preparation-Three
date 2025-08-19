@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>الصف الثالث | تمارين تفاعلية: الأعداد والقيمة المنزلية + الأنماط</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f9fafb;
+    --card:#ffffff;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --primary:#0ea5e9;
+    --accent:#22c55e;
+    --warn:#ef4444;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:"Tajawal", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans Arabic", "Noto Sans", sans-serif;
+    color:var(--ink);
+    background: var(--bg);
+    line-height:1.7;
+  }
+  /* Transparent math-symbols watermark */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:url("data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><g fill='%23000000' fill-opacity='.06' font-family='Arial' font-size='56' font-weight='700'><text x='20' y='70'>+</text><text x='140' y='70'>−</text><text x='20' y='150'>×</text><text x='140' y='150'>÷</text><text x='90' y='220'>=</text></g></svg>");
+    background-size:260px 260px;
+    background-repeat:repeat;
+    pointer-events:none;
+    z-index:-1;
+  }
+  .container{max-width:980px;margin:24px auto 100px;padding:0 16px;}
+  header{
+    background:linear-gradient(135deg,#06b6d4,#3b82f6);
+    color:#fff;padding:18px 22px;border-radius:var(--radius);
+    box-shadow:0 12px 30px rgba(59,130,246,.25);
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+  }
+  .logo{
+    width:120px; height:120px; object-fit:contain;
+    display:block; margin:6px auto 10px;
+    background:rgba(255,255,255,.2);
+    border-radius:20px;
+    border:3px solid rgba(255,255,255,.35);
+  }
+  .class-badge{
+    display:inline-block;
+    margin:0 auto 6px;
+    background:rgba(255,255,255,.2); color:#fff; padding:6px 12px; border-radius:999px; font-weight:800
+  }
+  header h1{margin:6px 0 2px;font-weight:800;font-size: clamp(20px, 2.6vw, 28px)}
+  header p{margin:0;color:#e2e8f0}
+  .teacher-note{display:none; margin-top:8px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.15); font-weight:700}
+  .teacher-note.show{display:block}
+  .quiz{margin-top:18px;display:grid;grid-template-columns:1fr;gap:18px;}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:0 8px 24px rgba(15,23,42,.06);padding:18px;position:relative;overflow:hidden;}
+  .q-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px}
+  .q-title{font-weight:700;margin:0;font-size: clamp(18px, 2.6vw, 22px); flex:1}
+  .pv-board{--b:#0f172a;display:grid;grid-template-columns: 1fr 1fr 1fr;width:min(340px, 90vw);border:3px solid var(--b);border-radius:12px;overflow:hidden;margin: 8px 0 14px;background:#fff;}
+  .pv-col{display:grid; grid-template-rows: 1fr auto}
+  .pv-head{writing-mode: vertical-rl;text-orientation: mixed;text-align:center;padding:10px 0;font-weight:700;border-left:3px solid var(--ink);}
+  .pv-col:nth-child(1) .pv-head{ background:#dbeafe } /* المئات */
+  .pv-col:nth-child(2) .pv-head{ background:#fef9c3 } /* العشرات */
+  .pv-col:nth-child(3) .pv-head{ background:#d1fae5 } /* الآحاد */
+  .pv-foot{border-top:3px solid var(--ink);padding:8px 0;text-align:center;font-size:28px;font-weight:800;background:#fff;}
+  .choices{display:grid;grid-template-columns: repeat(2, minmax(0,1fr));gap:10px;}
+  .choice{display:flex;align-items:center;gap:10px;border:2px solid #e2e8f0;padding:10px 12px;border-radius:14px;cursor:pointer;transition:.15s ease-in-out;user-select:none;background:#fff;}
+  .choice input{display:none}
+  .choice:hover{border-color:#94a3b8; transform:translateY(-1px)}
+  .choice[data-selected="true"]{border-color:var(--primary); box-shadow:0 8px 24px rgba(14,165,233,.15)}
+  .pill{min-width:32px;height:32px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:#e2e8f0;color:#0f172a;font-weight:800;}
+  .controls{position:sticky;bottom:0; inset-inline:0;background:linear-gradient(180deg, rgba(249,250,251,0) 0%, rgba(249,250,251,.9) 24%, rgba(249,250,251,1) 100%);padding:16px 0;margin-top:8px;backdrop-filter: blur(6px);}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  button{border:none; cursor:pointer;border-radius:12px; padding:12px 16px;font-weight:800; font-family:inherit;}
+  .btn-primary{ background:var(--primary); color:#fff }
+  .btn-ghost{ background:#e2e8f0; color:#0f172a }
+  .btn-sm{ padding:8px 10px; font-size:14px; border-radius:10px }
+  .score{font-weight:800; color:#334155;}
+  .correct{ border-color:var(--accent) !important }
+  .wrong{ border-color:var(--warn) !important }
+  .tick{ display:none; margin-inline-start:auto; font-weight:800 }
+  .choice.correct .tick{display:inline; color:var(--accent)}
+  .choice.wrong .tick{display:inline; color:#ef4444}
+  .choice.wrong .tick::after{ content:" ✗" }
+  .twobox{display:grid; grid-template-columns:repeat(2,minmax(0,220px)); gap:10px; margin-top:6px}
+  .ibox{display:flex; flex-direction:column; gap:6px}
+  .ibox label{font-weight:700; color:#334155}
+  .ibox input{border:2px solid #e2e8f0; border-radius:12px; padding:10px 12px; font-family:inherit; font-size:18px; text-align:center; background:#fff}
+  .ibox input:focus{outline:none; border-color:#93c5fd; box-shadow:0 0 0 4px rgba(59,130,246,.15)}
+  .ibox input.correct{border-color:var(--accent)}
+  .ibox input.wrong{border-color:#ef4444}
+  .seq{font-weight:800; margin-top:8px}
+  .seq .hole{display:inline-block; width:46px; height:28px; border-radius:10px; background:#e5e7eb; vertical-align:middle; margin:0 6px}
+  .mini{display:flex; gap:8px; flex-shrink:0}
+  .toast{
+    position:fixed; inset-inline-start:16px; bottom:16px; background:#16a34a; color:#fff;
+    padding:10px 12px; border-radius:12px; font-weight:800; box-shadow:0 10px 30px rgba(0,0,0,.2);
+    opacity:0; transform:translateY(12px); transition:.3s ease; z-index:9999;
+  }
+  .toast.show{opacity:1; transform:none}
+  footer{margin-top:24px; color:#64748b; text-align:center; font-weight:800; font-size:14px;}
+  .hint{color:#475569; font-weight:700; margin-top:8px; display:none}
+  .disabled{opacity:.55; pointer-events:none}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img class="logo" src="https://a.top4top.io/p_3516g9gcp1.jpg" alt="شعار"/>
+      <div class="class-badge">الصف الثالث</div>
+      <h1>تمارين تفاعلية: الأعداد والقيمة المنزلية + الآحاد/العشرات + الأنماط</h1>
+      <p>اختاري الإجابة الصحيحة لكل سؤال ثم اضغطي تحقّق.</p>
+      <div id="teacherNote" class="teacher-note">ملاحظة للمعلم/ـة: لا نكشف الإجابة الصحيحة تلقائيًا؛ عند الخطأ تظهر علامة ✗ فقط ويمكن إعادة المحاولة. (يظهر هذا الشريط فقط عند إضافة ?teacher=1 إلى عنوان الصفحة)</div>
+    </header>
+
+    <section class="quiz" id="quiz"></section>
+
+    <div class="controls">
+      <div class="row">
+        <button class="btn-primary" id="check-all">تحقّق من الإجابات</button>
+        <button class="btn-ghost" id="reset-all">إعادة المحاولة</button>
+        <span class="score" id="score">النتيجة: 0 / 0</span>
+      </div>
+    </div>
+
+    <footer>ا/فاطمة هزازي . ملتقى معلمي ومعلمات الرياضيات</footer>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">💚 شكراً لك! إجابة صحيحة — أحسنت/أحسنتِ 👏</div>
+
+<script>
+  // Toggle teacher note by query param ?teacher=1
+  const params = new URLSearchParams(location.search);
+  if (params.has('teacher')) {
+    const tn = document.getElementById('teacherNote');
+    if (tn) tn.classList.add('show');
+  }
+
+  // Utilities
+  const toArabicDigits = (n) => String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+  const toAsciiDigits = (s) => (s+'').replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]);
+  const makeId = () => Math.random().toString(36).slice(2);
+  const toast = document.getElementById('toast');
+  function showToast(msg){ toast.textContent = msg || "💚 شكراً لك! إجابة صحيحة — أحسنت 👏"; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 1600); }
+
+  function tensOnesOptions(num){
+    const o = num % 10, t = Math.floor(num/10);
+    const opts = new Set();
+    const mk = (oo,tt) => `${oo},${tt}`;
+    opts.add(mk(o,t));       // الصحيح
+    opts.add(mk(t,o));       // مقلوب
+    opts.add(mk(Math.max(0,o-1), t)); // طرح واحد من الآحاد
+    opts.add(mk(o, Math.max(0,t-1))); // طرح واحد من العشرات
+    while(opts.size < 4){ opts.add(mk((o+1)%10, t)); }
+    return Array.from(opts);
+  }
+
+  const questions = [
+    { id: makeId(), kind:"placevalue", title:"١) اقرأ لوحة القيمة المنزلية ثم اختر العدد الصحيح.", digits:{h:0,t:1,o:4}, options:[14,41,104,401], answer:14 },
+    { id: makeId(), kind:"placevalue", title:"٢) اقرأ لوحة القيمة المنزلية ثم اختر العدد الصحيح.", digits:{h:0,t:3,o:3}, options:[33,303,330,133], answer:33 },
+    { id: makeId(), kind:"placevalue", title:"٣) اقرأ لوحة القيمة المنزلية ثم اختر العدد الصحيح.", digits:{h:1,t:1,o:0}, options:[110,101,11,111], answer:110 },
+    { id: makeId(), kind:"verbal", title:"٤) ٥ آحاد و١ عشرات.", options:[15,51,105,150], answer:15 },
+    { id: makeId(), kind:"verbal", title:"٥) ٢ آحاد و١ مئات.", options:[102,120,12,200], answer:102 },
+    { id: makeId(), kind:"verbal", title:"٦) أَرْبَعَةٌ وَعِشْرُونَ.", options:[24,42,204,240], answer:24 },
+    { id: makeId(), kind:"verbal", title:"٧) مِئَةٌ وَثَمَانِيَةٌ وَثَلَاثُونَ.", options:[138,183,103,318], answer:138 },
+
+    (()=>{ const id=makeId(), n=12; return { id, kind:"tensones", title:"٨) اختر الزوج الصحيح (عدد الآحاد ، عدد العشرات) للعدد:", number:n, options:tensOnesOptions(n), answer:`${n%10},${Math.floor(n/10)}` } })(),
+    (()=>{ const id=makeId(), n=26; return { id, kind:"tensones", title:"٩) اختر الزوج الصحيح (عدد الآحاد ، عدد العشرات) للعدد:", number:n, options:tensOnesOptions(n), answer:`${n%10},${Math.floor(n/10)}` } })(),
+    (()=>{ const id=makeId(), n=31; return { id, kind:"tensones", title:"١٠) اختر الزوج الصحيح (عدد الآحاد ، عدد العشرات) للعدد:", number:n, options:tensOnesOptions(n), answer:`${n%10},${Math.floor(n/10)}` } })(),
+    (()=>{ const id=makeId(), n=85; return { id, kind:"tensones", title:"١١) اختر الزوج الصحيح (عدد الآحاد ، عدد العشرات) للعدد:", number:n, options:tensOnesOptions(n), answer:`${n%10},${Math.floor(n/10)}` } })(),
+    (()=>{ const id=makeId(), n=95; return { id, kind:"tensones", title:"١٢) اختر الزوج الصحيح (عدد الآحاد ، عدد العشرات) للعدد:", number:n, options:tensOnesOptions(n), answer:`${n%10},${Math.floor(n/10)}` } })(),
+
+    { id: makeId(), kind:"pattern", title:"١٣) أَجِدُ النَّمط ثم أكتب العددين التاليين:", seq:[2,4,6,8], next:[10,12] },
+    { id: makeId(), kind:"pattern", title:"١٤) أَجِدُ النَّمط ثم أكتب العددين التاليين:", seq:[1,3,5,7], next:[9,11] },
+    { id: makeId(), kind:"pattern", title:"١٥) أَجِدُ النَّمط ثم أكتب العددين التاليين:", seq:[5,10,15,20,25,30], next:[35,40] },
+    { id: makeId(), kind:"pattern", title:"١٦) أَجِدُ النَّمط ثم أكتب العددين التاليين:", seq:[10,20,30,40], next:[50,60] },
+
+    { id: makeId(), kind:"wordpattern", title:"١٧) قرأت سلمى ٤ صفحات في اليوم الأول، و٨ صفحات في اليوم الثاني، و١٢ صفحة في اليوم الثالث. إذا استمرت سلمى على هذا النمط، فكم صفحة ستقرأ في اليوم الرابع؟", options:[16,14,18,20], answer:16 }
+  ];
+
+  const quiz = document.getElementById('quiz');
+  const cardById = (qid) => document.querySelector(`[data-q="${qid}"]`);
+
+  // Render
+  questions.forEach((q) => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.dataset.q = q.id;
+
+    const head = document.createElement('div');
+    head.className = 'q-head';
+    const h = document.createElement('h3');
+    h.className = 'q-title';
+    h.textContent = q.title + (q.number != null ? ' ' + toArabicDigits(q.number) : '');
+    const mini = document.createElement('div');
+    mini.className = 'mini';
+    mini.innerHTML = `
+      <button class="btn-ghost btn-sm" data-act="reset" data-qid="${q.id}">إعادة للمحاولة</button>
+      <button class="btn-primary btn-sm" data-act="check" data-qid="${q.id}">تحقّق من الإجابات</button>`;
+    head.appendChild(h);
+    head.appendChild(mini);
+    card.appendChild(head);
+
+    if(q.kind === 'placevalue'){
+      const pv = document.createElement('div');
+      pv.className = 'pv-board';
+      pv.innerHTML = `
+        <div class="pv-col">
+          <div class="pv-head">المئات</div>
+          <div class="pv-foot">${toArabicDigits(q.digits.h)}</div>
+        </div>
+        <div class="pv-col">
+          <div class="pv-head">العشرات</div>
+          <div class="pv-foot">${toArabicDigits(q.digits.t)}</div>
+        </div>
+        <div class="pv-col">
+          <div class="pv-head">الآحاد</div>
+          <div class="pv-foot">${toArabicDigits(q.digits.o)}</div>
+        </div>`;
+      card.appendChild(pv);
+    }
+
+    if(q.kind === 'tensones' && q.options){
+      const choices = document.createElement('div');
+      choices.className = 'choices';
+      const opts = [...q.options].sort(()=>Math.random()-0.5);
+      opts.forEach((pair, oi) => {
+        const id = Math.random().toString(36).slice(2);
+        const [o,t] = pair.split(',').map(Number);
+        const label = document.createElement('label');
+        label.className = 'choice';
+        label.setAttribute('for', id);
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = q.id;
+        radio.value = pair;
+        radio.id = id;
+        radio.addEventListener('change', () => {
+          [...choices.querySelectorAll('.choice')].forEach(c => c.dataset.selected = 'false');
+          label.dataset.selected = 'true';
+        });
+
+        const pill = document.createElement('span');
+        pill.className = 'pill';
+        pill.textContent = toArabicDigits(oi+1);
+
+        const text = document.createElement('span');
+        text.style.fontWeight = '800';
+        text.textContent = `عدد الآحاد: ${toArabicDigits(o)} ، عدد العشرات: ${toArabicDigits(t)}`;
+
+        const tick = document.createElement('span');
+        tick.className = 'tick';
+        tick.textContent = "✓";
+
+        label.appendChild(radio);
+        label.appendChild(pill);
+        label.appendChild(text);
+        label.appendChild(tick);
+        choices.appendChild(label);
+      });
+      card.appendChild(choices);
+      const hint = document.createElement('div');
+      hint.className = 'hint';
+      hint.textContent = 'تلميح: الآحاد هو الرقم الأيمن في العدد من رقمين.';
+      card.appendChild(hint);
+    }
+
+    if(q.kind === 'pattern'){
+      const seq = document.createElement('div');
+      seq.className = 'seq';
+      const s = q.seq.map(n => toArabicDigits(n)).join(' ، ');
+      seq.innerHTML = `${s} ، <span class="hole"></span> ، <span class="hole"></span>`;
+      card.appendChild(seq);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'twobox';
+      const n1 = document.createElement('div');
+      n1.className = 'ibox';
+      const n2 = document.createElement('div');
+      n2.className = 'ibox';
+
+      const l1 = document.createElement('label');
+      l1.textContent = 'العدد التالي ١';
+      const l2 = document.createElement('label');
+      l2.textContent = 'العدد التالي ٢';
+
+      const i1 = document.createElement('input');
+      i1.type = 'text'; i1.maxLength = 3; i1.inputMode = 'numeric';
+      i1.placeholder = 'اكتب العدد'; i1.name = q.id + '_n1';
+      const i2 = document.createElement('input');
+      i2.type = 'text'; i2.maxLength = 3; i2.inputMode = 'numeric';
+      i2.placeholder = 'اكتب العدد'; i2.name = q.id + '_n2';
+
+      n1.appendChild(l1); n1.appendChild(i1);
+      n2.appendChild(l2); n2.appendChild(i2);
+      wrap.appendChild(n1); wrap.appendChild(n2);
+      card.appendChild(wrap);
+    }
+
+    if(q.kind === 'wordpattern'){
+      const choices = document.createElement('div');
+      choices.className = 'choices';
+      const opts = [...q.options].sort(()=>Math.random()-0.5);
+      opts.forEach((opt, oi) => {
+        const id = Math.random().toString(36).slice(2);
+        const label = document.createElement('label');
+        label.className = 'choice';
+        label.setAttribute('for', id);
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = q.id;
+        radio.value = opt;
+        radio.id = id;
+        radio.addEventListener('change', () => {
+          [...choices.querySelectorAll('.choice')].forEach(c => c.dataset.selected = 'false');
+          label.dataset.selected = 'true';
+        });
+
+        const pill = document.createElement('span');
+        pill.className = 'pill';
+        pill.textContent = toArabicDigits(oi+1);
+
+        const text = document.createElement('span');
+        text.style.fontWeight = '800';
+        text.textContent = toArabicDigits(opt);
+
+        const tick = document.createElement('span');
+        tick.className = 'tick';
+        tick.textContent = "✓";
+
+        label.appendChild(radio);
+        label.appendChild(pill);
+        label.appendChild(text);
+        label.appendChild(tick);
+        choices.appendChild(label);
+      });
+      card.appendChild(choices);
+      const hint = document.createElement('div');
+      hint.className = 'hint';
+      hint.textContent = 'تلميح: تزداد الصفحات كل يوم بمقدار ٤.';
+      card.appendChild(hint);
+    }
+
+    if(q.kind === 'verbal' || q.kind === 'placevalue'){
+      const choices = document.createElement('div');
+      choices.className = 'choices';
+
+      q.options?.forEach((opt, oi) => {
+        const id = Math.random().toString(36).slice(2);
+        const label = document.createElement('label');
+        label.className = 'choice';
+        label.setAttribute('for', id);
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = q.id;
+        radio.value = opt;
+        radio.id = id;
+        radio.addEventListener('change', () => {
+          [...choices.querySelectorAll('.choice')].forEach(c => c.dataset.selected = 'false');
+          label.dataset.selected = 'true';
+        });
+
+        const pill = document.createElement('span');
+        pill.className = 'pill';
+        pill.textContent = toArabicDigits(oi+1);
+
+        const text = document.createElement('span');
+        text.style.fontWeight = '800';
+        text.textContent = toArabicDigits(opt);
+
+        const tick = document.createElement('span');
+        tick.className = 'tick';
+        tick.textContent = "✓";
+
+        label.appendChild(radio);
+        label.appendChild(pill);
+        label.appendChild(text);
+        label.appendChild(tick);
+        choices.appendChild(label);
+      });
+
+      card.appendChild(choices);
+    }
+
+    quiz.appendChild(card);
+  });
+
+  // Score display
+  const scoreEl = document.getElementById('score');
+  const totalQ = () => questions.length;
+  const updateScore = () => {
+    let c = 0;
+    questions.forEach(q => { if(isCorrect(q)) c++; });
+    scoreEl.textContent = `النتيجة: ${toArabicDigits(c)} / ${toArabicDigits(totalQ())}`;
+    return c;
+  };
+  scoreEl.textContent = `النتيجة: ٠ / ${toArabicDigits(totalQ())}`;
+
+  function isCorrect(q){
+    if(q.kind === 'verbal' || q.kind === 'placevalue' || q.kind === 'wordpattern'){
+      const chosen = document.querySelector(`input[name="${q.id}"]:checked`);
+      return !!(chosen && Number(chosen.value) === Number(q.answer));
+    } else if(q.kind === 'tensones'){
+      if(q.options){
+        const chosen = document.querySelector(`input[name="${q.id}"]:checked`);
+        return !!(chosen && chosen.value === q.answer);
+      }
+      return false;
+    } else if(q.kind === 'pattern'){
+      const i1 = document.querySelector(`input[name="${q.id}_n1"]`);
+      const i2 = document.querySelector(`input[name="${q.id}_n2"]`);
+      const v1 = Number(toAsciiDigits(i1?.value || ''));
+      const v2 = Number(toAsciiDigits(i2?.value || ''));
+      return v1 === q.next[0] && v2 === q.next[1];
+    }
+    return false;
+  }
+
+  function markQuestion(q){
+    const card = cardById(q.id);
+    card.querySelectorAll('.choice.correct').forEach(el => el.classList.remove('correct'));
+    let wasCorrect = false;
+
+    if(q.kind === 'verbal' || q.kind === 'placevalue' || q.kind === 'wordpattern'){
+      const chosen = document.querySelector(`input[name="${q.id}"]:checked`);
+      if(chosen){
+        const label = chosen.closest('.choice');
+        const ok = Number(chosen.value) === Number(q.answer);
+        if(ok){
+          label.classList.add('correct');
+          wasCorrect = true;
+        }else{
+          label.classList.add('wrong');
+          chosen.disabled = true;
+          label.classList.add('disabled');
+          const hint = card.querySelector('.hint');
+          if(hint) hint.style.display = 'block';
+        }
+      }
+    } else if(q.kind === 'tensones' && q.options){
+      const chosen = document.querySelector(`input[name="${q.id}"]:checked`);
+      if(chosen){
+        const label = chosen.closest('.choice');
+        const ok = chosen.value === q.answer;
+        if(ok){
+          label.classList.add('correct');
+          wasCorrect = true;
+        }else{
+          label.classList.add('wrong');
+          chosen.disabled = true;
+          label.classList.add('disabled');
+          const hint = card.querySelector('.hint');
+          if(hint) hint.style.display = 'block';
+        }
+      }
+    } else if(q.kind === 'pattern'){
+      const i1 = card.querySelector(`input[name="${q.id}_n1"]`);
+      const i2 = card.querySelector(`input[name="${q.id}_n2"]`);
+      const v1 = Number(toAsciiDigits(i1.value || ''));
+      const v2 = Number(toAsciiDigits(i2.value || ''));
+      const ok1 = v1 === q.next[0];
+      const ok2 = v2 === q.next[1];
+      i1.classList.toggle('correct', ok1); i1.classList.toggle('wrong', !ok1);
+      i2.classList.toggle('correct', ok2); i2.classList.toggle('wrong', !ok2);
+      wasCorrect = ok1 && ok2;
+    }
+    if(wasCorrect){ showToast("💚 شكراً لك! إجابة صحيحة — أحسنت/أحسنتِ 👏"); }
+  }
+
+  function resetQuestion(q){
+    const card = cardById(q.id);
+    card.querySelectorAll('.choice').forEach(c => c.classList.remove('correct','wrong','disabled'));
+    card.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = false; r.disabled = false; });
+    card.querySelectorAll('input[type="text"]').forEach(i => { i.value=''; i.classList.remove('correct','wrong'); });
+    const hint = card.querySelector('.hint'); if(hint) hint.style.display = 'none';
+  }
+
+  // per-question buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const qid = btn.dataset.qid;
+    const q = questions.find(x => x.id === qid);
+    if(!q) return;
+    if(btn.dataset.act === 'check'){
+      markQuestion(q);
+      updateScore();
+    } else if(btn.dataset.act === 'reset'){
+      resetQuestion(q);
+      updateScore();
+    }
+  });
+
+  // Global buttons
+  document.getElementById('check-all').addEventListener('click', () => {
+    questions.forEach(q => markQuestion(q));
+    updateScore();
+  });
+  document.getElementById('reset-all').addEventListener('click', () => {
+    questions.forEach(q => resetQuestion(q));
+    updateScore();
+  });
+</script>
+</body>
+</html>
